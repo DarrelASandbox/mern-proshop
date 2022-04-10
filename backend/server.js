@@ -2,15 +2,16 @@ import 'dotenv/config';
 import colors from 'colors';
 import express from 'express';
 import mongoose from 'mongoose';
-import products from '../data/products.js';
+import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+import productRoutes from './routes/productRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
 
-app.get('/api/products', (req, res) => res.json(products));
-app.get('/api/products/:id', (req, res) =>
-  res.json(products.find((product) => product._id === req.params.id))
-);
+app.use('/api/products', productRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 try {
   const connect = await mongoose.connect(process.env.MONGODB_URI);

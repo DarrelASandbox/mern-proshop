@@ -7,14 +7,18 @@
   "scripts": {
     "frontend": "npm start --prefix frontend",
     "backend": "npx nodemon ./backend/server.js --ignore frontend",
-    "start": "concurrently --kill-others-on-fail \"npm run backend\" \"npm run frontend\""
+    "start": "concurrently --kill-others-on-fail \"npm run backend\" \"npm run frontend\"",
+    "data:import": "node backend/seeder",
+    "data:destroy": "node backend/seeder -d"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "concurrently": "^7.1.0",
     "express": "^4.17.3",
+    "express-async-handler": "^1.2.0",
     "mongoose": "^6.2.10"
   },
   "devDependencies": {
