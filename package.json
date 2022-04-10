@@ -1,0 +1,12 @@
+{
+  "name": "proshop",
+  "version": "1.0.0",
+  "description": "- MERN eCommerce From Scratch - Build an eCommerce platform from the ground up with React, Redux, Express & MongoDB - Tutorial for Proshop - [GitHub - Brad Traversy](https://github.com/bradtraversy) - [YouTube - Coding with Basir](https://www.youtube.com/CodingwithBasir)",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start --prefix frontend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
