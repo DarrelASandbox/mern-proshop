@@ -3,10 +3,20 @@
   "version": "1.0.0",
   "description": "- MERN eCommerce From Scratch - Build an eCommerce platform from the ground up with React, Redux, Express & MongoDB - Tutorial for Proshop - [GitHub - Brad Traversy](https://github.com/bradtraversy) - [YouTube - Coding with Basir](https://www.youtube.com/CodingwithBasir)",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "npm start --prefix frontend"
+    "frontend": "npm start --prefix frontend",
+    "backend": "npx nodemon ./backend/server.js --ignore frontend",
+    "start": "concurrently --kill-others-on-fail \"npm run backend\" \"npm run frontend\""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.1.0",
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
+  }
 }
