@@ -1,17 +1,17 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Message } from '../component/';
-import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
-  Row,
-  Col,
-  ListGroup,
-  Image,
-  Form,
   Button,
   Card,
+  Col,
+  Form,
+  Image,
+  ListGroup,
+  Row,
 } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { addToCart } from '../actions/cartActions';
+import { Message } from '../component/';
 
 const CartScreen = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -49,7 +49,7 @@ const CartScreen = () => {
               <ListGroup.Item key={item.id}>
                 <Row>
                   <Col md={2}>
-                    <Image src={item.image} alt={item.name} fluid round />
+                    <Image src={item.image} alt={item.name} fluid rounded />
                   </Col>
 
                   <Col md={3}>

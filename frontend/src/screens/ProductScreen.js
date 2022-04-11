@@ -9,7 +9,8 @@ import {
   Row,
 } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { addToCart } from '../actions/cartActions';
 import { listProductDetails } from '../actions/productActions';
 import { Loader, Message, Rating } from '../component';
 
@@ -28,7 +29,8 @@ const ProductScreen = () => {
   );
 
   const addToCartHandler = () => {
-    navigate(`/cart/${params.id}?qty=${qty}`);
+    dispatch(addToCart(params.id, qty));
+    navigate('/');
   };
 
   const displayProductItem = () => {
