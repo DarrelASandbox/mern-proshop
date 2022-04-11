@@ -1,23 +1,32 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import { cartReducer } from './reducers/cartReducers';
 import {
   productDetailsReducer,
   productListReducer,
 } from './reducers/productReducers';
-import { cartReducer } from './reducers/cartReducers';
+import { userLoginReducer } from './reducers/userReducers';
 
 const reducer = combineReducers({
   productList: productListReducer,
   productDetails: productDetailsReducer,
   cart: cartReducer,
+  userLogin: userLoginReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : [];
 
-const initialState = { cart: { cartItems: cartItemsFromStorage } };
+const userInfoFromStorage = localStorage.getItem('userInfo')
+  ? JSON.parse(localStorage.getItem('userInfo'))
+  : null;
+
+const initialState = {
+  cart: { cartItems: cartItemsFromStorage },
+  userLogin: { userInfo: userInfoFromStorage },
+};
 
 const middleware = [thunk];
 
@@ -26,19 +35,6 @@ const store = createStore(
   initialState,
   composeWithDevTools(applyMiddleware(...middleware))
 );
-
-/*
-Instead of setting LS in our action creators we can add a redux subscription,
-so that any time the cart items change in redux ie. we add an item or remove an item,
-it automatically sets LS for us.
-
-That way we don't have to imperatively set LS in every cartItem related action creator.
-
-The subscription runs when ever something is dispatched, so LS is whatever is state.cart.cartItems.
-You're only mutating LS in one place rather than multiple action creators.
-It also keeps separation of concerns with action creators only responsible for creating actions,
-without side effects, so follows rules of FP.
-*/
 
 let currentState = store.getState(); // subscription
 
@@ -56,3 +52,16 @@ store.subscribe(() => {
 });
 
 export default store;
+
+/*
+Instead of setting LS in our action creators we can add a redux subscription,
+so that any time the cart items change in redux ie. we add an item or remove an item,
+it automatically sets LS for us.
+
+That way we don't have to imperatively set LS in every cartItem related action creator.
+
+The subscription runs when ever something is dispatched, so LS is whatever is state.cart.cartItems.
+You're only mutating LS in one place rather than multiple action creators.
+It also keeps separation of concerns with action creators only responsible for creating actions,
+without side effects, so follows rules of FP.
+*/
