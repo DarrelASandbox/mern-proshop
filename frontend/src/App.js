@@ -1,7 +1,7 @@
 import { Container } from 'react-bootstrap';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Footer, Header } from './component/';
-import { HomeScreen, ProductScreen } from './screens/';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CartScreen, HomeScreen, ProductScreen } from './screens/';
 
 const App = () => (
   <>
@@ -12,6 +12,8 @@ const App = () => (
           <Routes>
             <Route path='/' element={<HomeScreen />} />
             <Route path='/product/:id' element={<ProductScreen />} />
+            <Route path='/cart/:id' element={<CartScreen />} />
+            <Route path='/cart/' element={<CartScreen />} />
           </Routes>
         </main>
       </Container>
