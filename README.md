@@ -11,6 +11,7 @@
 ## Notes
 
 - [Bootswatch - bootstrap.min.css](https://bootswatch.com/)
+- [stackoverflow - Why isn't React considered MVC?](https://stackoverflow.com/questions/53729411/why-isnt-react-considered-mvc)
 
 &nbsp;
 
