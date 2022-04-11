@@ -10,7 +10,7 @@ import {
 } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { addToCart } from '../actions/cartActions';
+import { addToCart, removeFromCart } from '../actions/cartActions';
 import { Message } from '../component/';
 
 const CartScreen = () => {
@@ -26,9 +26,7 @@ const CartScreen = () => {
     if (params.id) dispatch(addToCart(params.id, qty));
   }, [dispatch, params.id, qty]);
 
-  const removeFromCartHandler = (id) => {
-    console.log(id);
-  };
+  const removeFromCartHandler = (id) => dispatch(removeFromCart(id));
 
   const checkoutHandler = () => {
     console.log('checkout');
