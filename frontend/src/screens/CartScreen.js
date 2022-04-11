@@ -11,7 +11,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { addToCart, removeFromCart } from '../actions/cartActions';
-import { Message } from '../component/';
+import { Message } from '../components/';
 
 const CartScreen = () => {
   const { cartItems } = useSelector((state) => state.cart);

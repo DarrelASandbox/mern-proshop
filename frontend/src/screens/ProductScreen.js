@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { addToCart } from '../actions/cartActions';
 import { listProductDetails } from '../actions/productActions';
-import { Loader, Message, Rating } from '../component';
+import { Loader, Message, Rating } from '../components';
 
 const ProductScreen = () => {
   const [qty, setQty] = useState(1);
