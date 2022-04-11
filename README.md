@@ -31,3 +31,32 @@
 ---
 
 &nbsp;
+
+> <b>Dhruv: </b>Why we can't use arrow function with userSchema methods?
+>
+> ```js
+> userSchema.methods.matchPassword = async (enteredPassword) => {};
+> ```
+>
+> while using arrow function here, i am getting an error that password is not defined.
+>
+> "message": "Cannot read property 'password' of undefined", "stack": "TypeError: Cannot read property 'password' of undefined\n at model.userSchema.methods.matchPassword (file:///proshop/backend/models/userModel.js:31:53)\n at file:////proshop/backend/controllers/userController.js:11:27\n at processTicksAndRejections (internal/process/task_queues.js:97:5)" }
+
+> <b>Bassir: </b>because "this" in the arrow function point to the parent object and there is no parent object or function there. so you need to use regular functions.
+
+> <b>Dhruv: </b>Thanks, for the reply. Could u please explain how we have parent object in regular function but not in arrow function. By the way, The course is really helpful.
+
+> <b>Zhing Jieh Jack: </b>In general, <code>this</code> is a special variable that points to either the globalObject (e.g window), caller (instance), or Class.
+> For an instance's function, <code>this</code> points to the instance. Hence we can do <code>this.password</code> as <code>this</code> points to user instance.
+> For a static function (Class's function), <code>this</code> points to the Class. Hence we can do <code>this.find({})</code> as <code>this</code> points to User model.
+> For an arrow function, <code>this</code> does not point to the caller (instance) or its Class, it points to the context where the arrow function is called.
+>
+> [This MDN document](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this) should clarify more
+
+> <b>David: </b>Arrow functions do not get hoisted and "this" is set to window object. Its just how they work. You have to bind "this" manually. It would be easier to just write it as a normal function in this case
+
+&nbsp;
+
+---
+
+&nbsp;
