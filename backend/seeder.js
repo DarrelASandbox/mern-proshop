@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import colors from 'colors';
 import mongoose from 'mongoose';
-import products from '../data/products.js';
-import users from '../data/users.js';
+import products from './data/products.js';
+import users from './data/users.js';
 import { Order, Product, User } from './models/index.js';
 
 try {
