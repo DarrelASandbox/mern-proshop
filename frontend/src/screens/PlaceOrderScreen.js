@@ -10,7 +10,7 @@ const PlaceOrderScreen = () => {
   const orderCreate = useSelector((state) => state.orderCreate);
   const { order, success, error } = orderCreate;
   const cart = useSelector((state) => state.cart);
-  console.log(orderCreate);
+
   let {
     paymentMethod,
     cartItems,

@@ -40,14 +40,14 @@ const CartScreen = () => {
         ) : (
           <ListGroup variant='flush'>
             {cartItems.map((item) => (
-              <ListGroup.Item key={item.id}>
+              <ListGroup.Item key={item.productId}>
                 <Row>
                   <Col md={2}>
                     <Image src={item.image} alt={item.name} fluid rounded />
                   </Col>
 
                   <Col md={3}>
-                    <Link to={`/product/${item.id}`}>{item.name}</Link>
+                    <Link to={`/product/${item.productId}`}>{item.name}</Link>
                   </Col>
 
                   <Col md={2}>${item.price}</Col>
@@ -57,7 +57,7 @@ const CartScreen = () => {
                       value={item.qty}
                       className='selectForm'
                       onChange={(e) =>
-                        dispatch(addToCart(item.id, +e.target.value))
+                        dispatch(addToCart(item.productId, +e.target.value))
                       }>
                       {[...Array(item.countInStock).keys()].map((x) => (
                         <option key={x + 1} value={x + 1}>
@@ -71,7 +71,7 @@ const CartScreen = () => {
                     <Button
                       type='button'
                       variant='light'
-                      onClick={() => removeFromCartHandler(item.id)}>
+                      onClick={() => removeFromCartHandler(item.productId)}>
                       <i className='fas fa-trash' />
                     </Button>
                   </Col>
