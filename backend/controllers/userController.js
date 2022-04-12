@@ -44,7 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+  const { user } = req;
   if (user)
     return res.json({
       _id: user._id,
@@ -58,26 +58,38 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+/*
+Similar to the getUserProfile controller,
+we already have the user's profile from our authMiddleware,
+so we don't really need to make an additional query to the DB
+to get the same information again.
+We can use the user we just queried when we authenticated them.
+
+Will: Note - I'm not sending a token here as I'm using http only cookies and
+https local development (for secure and sameSite cookies), instead of LS,
+so you may want to add the token in the response,
+though the one the user has in the client already will be valid so not strictly necessary.
+*/
+
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-
-    if (req.body.password) user.password = req.body.password;
-
-    const updatedUser = await user.save();
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      token: generateToken(updatedUser._id),
-    });
-  } else {
+  const { user } = req;
+  if (!user) {
     res.status(404);
     throw new Error('User not found');
   }
+  const { name, email, password } = req.body;
+  if (name) user.name = name;
+  if (email) user.email = email;
+  if (password) user.password = password;
+
+  const updatedUser = await user.save();
+  res.json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.isAdmin,
+    token: generateToken(updatedUser._id),
+  });
 });
 
 export { authUser, registerUser, getUserProfile, updateUserProfile };
