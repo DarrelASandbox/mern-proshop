@@ -28,11 +28,7 @@ const CartScreen = () => {
 
   const removeFromCartHandler = (id) => dispatch(removeFromCart(id));
 
-  const checkoutHandler = () => {
-    console.log('checkout');
-    navigate('/shipping');
-  };
-
+  const checkoutHandler = () => navigate('/shipping');
   return (
     <Row>
       <Col md={8}>
