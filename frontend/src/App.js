@@ -7,6 +7,7 @@ import {
   LoginScreen,
   ProductScreen,
   RegisterScreen,
+  ProfileScreen,
 } from './screens/';
 
 const App = () => (
@@ -19,6 +20,7 @@ const App = () => (
             <Route path='/' element={<HomeScreen />} />
             <Route path='/register' element={<RegisterScreen />} />
             <Route path='/login' element={<LoginScreen />} />
+            <Route path='/profile' element={<ProfileScreen />} />
             <Route path='/product/:id' element={<ProductScreen />} />
             <Route path='/cart/:id' element={<CartScreen />} />
             <Route path='/cart/' element={<CartScreen />} />
