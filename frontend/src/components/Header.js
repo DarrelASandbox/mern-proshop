@@ -43,6 +43,20 @@ const Header = () => {
               <i className='fas fa-shopping-cart'></i> Cart
             </Nav.Link>
             {userInfo ? loggedInMenu : signInButton}
+
+            {userInfo && userInfo.isAdmin && (
+              <NavDropdown title='Admin' id='adminmenu'>
+                <NavDropdown.Item as={Link} to='/admin/userlist'>
+                  Users
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to='/admin/productlist'>
+                  Products
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to='/admin/orderlist'>
+                  Orders
+                </NavDropdown.Item>
+              </NavDropdown>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
