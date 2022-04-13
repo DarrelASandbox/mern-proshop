@@ -24,10 +24,12 @@ const PlaceOrderScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
+  itemsPrice = cartItems
+    .reduce((acc, item) => acc + +item.price * item.qty, 0)
+    .toFixed(2);
   shippingPrice = itemsPrice > 100 ? 0 : 100;
-  taxPrice = 0.15 * itemsPrice;
-  totalPrice = itemsPrice + shippingPrice + taxPrice;
+  taxPrice = (0.15 * +itemsPrice).toFixed(2);
+  totalPrice = (+itemsPrice + +shippingPrice + +taxPrice).toFixed(2);
 
   useEffect(() => {
     if (success) navigate(`/order/${order._id}`);
@@ -111,25 +113,25 @@ const PlaceOrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>${itemsPrice.toFixed(2)}</Col>
+                  <Col>${itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>${shippingPrice.toFixed(2)}</Col>
+                  <Col>${shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>${taxPrice.toFixed(2)}</Col>
+                  <Col>${taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>${totalPrice.toFixed(2)}</Col>
+                  <Col>${totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>

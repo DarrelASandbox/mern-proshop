@@ -61,7 +61,7 @@ const getOrderDetails = (id) => async (dispatch, getState) => {
   }
 };
 
-const payOrder = (orderId, paymentResults) => async (dispatch, getState) => {
+const payOrder = (orderId, paymentResult) => async (dispatch, getState) => {
   try {
     dispatch({ type: ORDER_PAY_REQUEST });
     const {
@@ -74,9 +74,10 @@ const payOrder = (orderId, paymentResults) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.put(
+
+    const { data } = await axios.patch(
       `/api/orders/${orderId}/pay`,
-      paymentResults,
+      paymentResult,
       config
     );
 
