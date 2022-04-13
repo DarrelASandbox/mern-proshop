@@ -3,6 +3,7 @@
 - MERN eCommerce From Scratch
 - Build an eCommerce platform from the ground up with React, Redux, Express & MongoDB
 - Tutorial for ProShop
+- <b style="color:red;">NOT MEANT FOR PRODUCTION (Refer to Notes section below)</b>
 - [GitHub - Brad Traversy](https://github.com/bradtraversy)
 - [YouTube - Coding with Basir](https://www.youtube.com/CodingwithBasir)
 
@@ -110,6 +111,58 @@ export const getOrderById = asyncHandler(async (req, res) => {
   }
 });
 ```
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Valdis: </b>Security issue - you can update order to isPaid, without going through payment!
+> Please have fun trying it yourself! Place order, but don't pay for it, then follow instructions below. I'm on lesson 61. All I tried is - sent PUT request via Postman to API route, include your token in headers, and in "body" put JSON data like this:
+
+```js
+{
+    "id": "Somestring",
+    "status": "sortOfSuccess",
+    "update_time": "Tomorrow",
+    "payer": {"email_address": "badguy@example.com"}
+}
+```
+
+> Send PUT request to your <code>/api/orders/:id/pay</code>, obviously include your order id,
+
+> Or send it to Brads original website:
+> <code> http://proshopapp.herokuapp.com/api/orders/<put-your-order-id-here>/pay</code>
+>
+> Dear Brad, if you are reading this, please check paymentResult in your database for this order: <code>http://proshopapp.herokuapp.com/order/60298a48b01e61000418c5a2</code>
+>
+> And here comes the question - how do we protect this route??
+
+> <b>Valdis: </b>And here comes reply to myself :))
+>
+> I think fixing this is not a big deal. We can make API route unguessable, like this
+> <code>/api/orders/&lt;some-unguesssable-string&gt;/:id/pay</code>
+>
+> In addition, as I just found from lesson 63 - we have a complicated object coming from PayPal as a response, so we have plenty of options to mess with that - not necessary the way shown in this lesson. So what I did in my previous post is not that clever, but I will keep both comments, so people know there's a potential risk if we all stick to the same standard.
+
+> <b>Begzod: </b>you are right, but it is still risky to try to protect it using that 'unguessable' route. The better way is I think somehow get the payment confirmed in the backend by sending a confirmation request to Paypal API.
+
+> <b>Allan: </b>Indeed, this seems to be a security loophole that requires URGENT rectification. Unfortunately, relying on PayPal API for "confirmation" may not be useful on orders using other payment options such as Cash-on-Delivery (COD), Cash-on-Pickup (COP), etc. COD and COP, requires that an Admin (or external Courier API) mark the order as Paid.
+
+> In this regard, I am interested in adopting Valdis' idea, but to utilize a secret key (include in <code>.env</code>), hash it with another variable such as the Order ID, then require it when calling the <code>/pay</code> route.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Rafal: </b>Is it safe?
+>
+> Is it safe to update the payment without any confirmation? When I make an order I could sent the PUT request to the API and it would update without actual payment. If the seller wouldn't check if the payment was actually received he could sent me the item. Is there a way to check if the payment was received with react-paypal-button-v2 via backend?
+
+> <b>Bassir: </b>use this [api](https://developer.paypal.com/docs/api/payments/v2/) to confirm paypal payment
 
 &nbsp;
 

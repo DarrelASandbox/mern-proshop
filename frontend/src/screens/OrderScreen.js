@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Card, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getOrderDetails } from '../actions/orderActions';
 import { Loader, Message } from '../components';
 
@@ -11,7 +11,6 @@ const OrderScreen = () => {
 
   const dispatch = useDispatch();
   const { orderId } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getOrderDetails(orderId));
