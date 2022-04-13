@@ -26,4 +26,10 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
   }
 });
 
-export default authMiddleware;
+const adminMiddleware = (req, res, next) => {
+  if (req.user && req.user.isAdmin) return next();
+  res.status(404);
+  throw new Error('Not authorized');
+};
+
+export { authMiddleware, adminMiddleware };
