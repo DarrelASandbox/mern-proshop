@@ -122,9 +122,10 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
   const { name, email, isAdmin } = req.body;
+
   if (name) user.name = name;
   if (email) user.email = email;
-  if (isAdmin) user.isAdmin = isAdmin;
+  user.isAdmin = isAdmin;
 
   await user.save();
   res.json({

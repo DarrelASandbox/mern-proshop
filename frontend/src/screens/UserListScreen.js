@@ -65,7 +65,8 @@ const UserListScreen = () => {
                     as={Link}
                     to={`/admin/user/${user._id}/edit`}
                     variant='light'
-                    className='btn-sm'>
+                    className='btn-sm'
+                    disabled={userInfo._id === user._id}>
                     <i className='fas fa-edit'></i>
                   </Button>
                   <Button
