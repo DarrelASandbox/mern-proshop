@@ -5,13 +5,14 @@ import {
   CartScreen,
   HomeScreen,
   LoginScreen,
+  OrderScreen,
   PaymentScreen,
+  PlaceOrderScreen,
   ProductScreen,
   ProfileScreen,
   RegisterScreen,
   ShippingScreen,
-  PlaceOrderScreen,
-  OrderScreen,
+  UserEditScreen,
   UserListScreen,
 } from './screens/';
 
@@ -34,6 +35,10 @@ const App = () => (
             <Route path='/placeorder' element={<PlaceOrderScreen />} />
             <Route path='/order/:orderId' element={<OrderScreen />} />
             <Route path='/admin/userlist' element={<UserListScreen />} />
+            <Route
+              path='/admin/user/:userId/edit'
+              element={<UserEditScreen />}
+            />
           </Routes>
         </main>
       </Container>
