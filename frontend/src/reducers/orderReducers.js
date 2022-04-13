@@ -31,7 +31,7 @@ const orderCreateReducer = (state = {}, action) => {
 };
 
 const orderDetailsReducer = (
-  state = { orderItems: [], shippingAddress: {} },
+  state = { loading: true, orderItems: [], shippingAddress: {} },
   action
 ) => {
   switch (action.type) {
@@ -41,7 +41,7 @@ const orderDetailsReducer = (
     case ORDER_DETAILS_SUCCESS:
       return {
         loading: false,
-        order: action.payload.createdOrder,
+        order: action.payload,
       };
 
     case ORDER_DETAILS_FAIL:
