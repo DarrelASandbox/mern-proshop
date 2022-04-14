@@ -4,6 +4,7 @@ import LoginScreen from './LoginScreen';
 import OrderScreen from './OrderScreen';
 import PaymentScreen from './PaymentScreen';
 import PlaceOrderScreen from './PlaceOrderScreen';
+import ProductEditScreen from './ProductEditScreen';
 import ProductListScreen from './ProductListScreen';
 import ProductScreen from './ProductScreen';
 import ProfileScreen from './ProfileScreen';
@@ -26,4 +27,5 @@ export {
   UserListScreen,
   UserEditScreen,
   ProductListScreen,
+  ProductEditScreen,
 };

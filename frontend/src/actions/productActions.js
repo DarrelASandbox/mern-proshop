@@ -10,6 +10,9 @@ import {
   PRODUCT_CREATE_FAIL,
   PRODUCT_CREATE_REQUEST,
   PRODUCT_CREATE_SUCCESS,
+  PRODUCT_UPDATE_FAIL,
+  PRODUCT_UPDATE_REQUEST,
+  PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstant';
 
 const listProducts = () => async (dispatch) => {
@@ -72,7 +75,6 @@ const createProduct = () => async (dispatch, getState) => {
     const {
       userLogin: { userInfo },
     } = getState();
-    console.log(userInfo.token);
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
 
     const { data } = await axios.post(`/api/products`, {}, config);
@@ -88,4 +90,43 @@ const createProduct = () => async (dispatch, getState) => {
   }
 };
 
-export { listProducts, listProductDetails, deleteProduct, createProduct };
+const updateProduct = (product) => async (dispatch, getState) => {
+  dispatch({ type: PRODUCT_UPDATE_REQUEST });
+
+  try {
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.patch(
+      `/api/products/${product._id}`,
+      product,
+      config
+    );
+
+    dispatch({ type: PRODUCT_UPDATE_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_UPDATE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export {
+  listProducts,
+  listProductDetails,
+  deleteProduct,
+  createProduct,
+  updateProduct,
+};
