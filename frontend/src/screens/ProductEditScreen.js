@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +15,7 @@ const ProductEditScreen = () => {
   const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const productDetails = useSelector((state) => state.productDetails);
   const { error, product } = productDetails;
@@ -47,6 +49,24 @@ const ProductEditScreen = () => {
       }
     }
   }, [dispatch, productId, product, navigate, successUpdate]);
+
+  const uploadFileHandler = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    setUploading(true);
+
+    try {
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+      const { data } = await axios.post('/api/upload', formData, config);
+      console.log(data);
+      setImage(data);
+      setUploading(false);
+    } catch (error) {
+      console.log(error);
+      setUploading(false);
+    }
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -87,7 +107,8 @@ const ProductEditScreen = () => {
                 type='name'
                 placeholder='Enter name'
                 value={name}
-                onChange={(e) => setName(e.target.value)}></Form.Control>
+                onChange={(e) => setName(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group controlId='price'>
@@ -96,7 +117,8 @@ const ProductEditScreen = () => {
                 type='number'
                 placeholder='Enter price'
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}></Form.Control>
+                onChange={(e) => setPrice(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group controlId='image'>
@@ -105,7 +127,15 @@ const ProductEditScreen = () => {
                 type='text'
                 placeholder='Enter image url'
                 value={image}
-                onChange={(e) => setImage(e.target.value)}></Form.Control>
+                onChange={(e) => setImage(e.target.value)}
+              />
+
+              <Form.Control
+                type='file'
+                label='Choose File'
+                onChange={uploadFileHandler}
+              />
+              {uploading && <Loader />}
             </Form.Group>
 
             <Form.Group controlId='brand'>
@@ -114,7 +144,8 @@ const ProductEditScreen = () => {
                 type='text'
                 placeholder='Enter brand'
                 value={brand}
-                onChange={(e) => setBrand(e.target.value)}></Form.Control>
+                onChange={(e) => setBrand(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group controlId='countInStock'>
@@ -134,7 +165,8 @@ const ProductEditScreen = () => {
                 type='text'
                 placeholder='Enter category'
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}></Form.Control>
+                onChange={(e) => setCategory(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group controlId='description'>
@@ -143,7 +175,8 @@ const ProductEditScreen = () => {
                 type='text'
                 placeholder='Enter description'
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}></Form.Control>
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </Form.Group>
 
             <Button type='submit' variant='primary'>

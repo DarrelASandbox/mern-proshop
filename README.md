@@ -204,3 +204,296 @@ export const getOrderById = asyncHandler(async (req, res) => {
 ---
 
 &nbsp;
+
+> <b>Jay: </b> Photo upload update
+>
+> The issue with the photo uploading to Heroku is only bad because when they run dynos on your server their "cycle" cleans the uploaded files. The solution I am proposing will allow you to upload your photos to Cloudinary and then use that url for your photos return path.
+>
+> You actually don't have to change anything in your files, you actually want to follow the tutorial until you are successfully uploading images.
+>
+> Once you can upload imagees you will want to open a developer Cloudinary account (free) [Cloudinay Dev account register.](https://cloudinary.com/users/register/free)
+>
+> In your env file you want to add these properties
+
+```js
+CLOUD_NAME =
+  sample_name_make_sure_you_use_your_bucket_name_here_when_creating_bucket;
+CLOUD_API_KEY = api_key_from_cloudinary;
+CLOUD_API_SECRET = api_secret_from_cloudinary;
+```
+
+> Then run <code>npm i cloudinary</code> in your root project folder just as we did for anything else added to the backend server.
+>
+> 1. In server.js we need to import Cloudinary but, Cloudinary does not support es6 modules at this time so, when doing <code>import cloudinary from 'cloudinary'</code> we can not use cloudinary as we normally are in this project. To get around this you will want to
+>
+> <code>import pkg from 'cloudinary'</code>
+>
+> (side note you can call pkg anything else as well)
+>
+> then we can take cloudinary our of pkg by adding right below the import <code>const cloudinary = pkg</code>
+>
+> 2. In server.js add the following (I put mine right before my routes)
+
+```js
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+
+app.use('/api/products', productRoutes);
+```
+
+> 3. In uploadRoute.js
+>
+> - You will need to bring in cloudinary the exact way as you did in the sever file
+> - In the router.post we actually also want to leave it mostly the same as the way I am fixing it still uses multer to process and check the image type and to upload it to the server. When uploading to Cloudinary we are going to then use that path as the path to the image (Cloudinary requires the image uploaded be a string and also I didn't want to change too much of the project also wanted to keep issues down in other folks projects and create even more issues for them)
+
+```js
+router.post(
+  '/',
+  upload.single('image'),
+  asyncHandler(async (req, res) => {
+    const uploadPhoto = await cloud.uploader.upload(`${req.file.path}`);
+    console.log(uploadPhoto); // This will give you all the information back from the uploaded photo result
+    console.log(uploadPhoto.url); // This is what we want to send back now in the  res.send
+    res.send(uploadPhoto.url);
+  })
+);
+```
+
+> (I recommend copying and pasting this below your route so you can better see what's going on and the comments properly)
+>
+> I added the asyncHandler to this as well so I can catch any errors if any when uploading the photo to cloudinary. You do not have to do this but I do suggest adding async (req, res) as you will have to use .then() if not for the response on cloudinary upload.
+>
+> So, what's going on here? Well as you can see the route is exactly the same but I added <code>const uploadPhoto = await cloud.uploader.upload(`${req.file.path}`)</code> which is the path on the heroku server that multer uploaded to. Same as if we left it as <code>res.send(`/${req.file.path}`)</code>. The console logs are for your info after we save the file we then we can send that url in our <code>res.send(uploadPhoto.url)</code>.
+
+> <b>Nelson: </b>Thanks for the contribution. I prefer S3 however. Cloudinary is very expensive after you use up the bandwith in the free tier. I'll try setting up Multer with S3 and post my results. Thanks again!
+>
+> <b>Viktoras: </b>My setup for S3 and multer: I create new uploadControler.js with code bellow
+
+```js
+import asyncHandler from 'express-async-handler';
+import aws from 'aws-sdk';
+import fs from 'fs';
+import path from 'path';
+
+const uploadProductImage = asyncHandler((req, res) => {
+  aws.config.setPromisesDependency();
+  aws.config.update({
+    accessKeyId: process.env.AWS_S3_ACCESSKEYID,
+    secretAccessKey: process.env.AWS_S3_SECRETACCESSKEY,
+    region: process.env.AWS_S3_REGION,
+  });
+
+  const s3 = new aws.S3();
+
+  const imageName = `${path.basename(
+    req.file.originalname,
+    path.extname(req.file.originalname)
+  )}-${Date.now()}${path.extname(req.file.originalname)}`;
+
+  var params = {
+    ACL: 'public-read',
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Body: fs.createReadStream(req.file.path),
+    Key: `products/${imageName}`,
+  };
+
+  s3.upload(params, (error, data) => {
+    if (error) {
+      res.status(error.statusCode).send(error.message);
+    }
+
+    if (data) {
+      fs.unlinkSync(req.file.path); // Empty temp folder
+      const locationUrl = data.Location;
+      res.send(locationUrl);
+    }
+  });
+});
+
+export { uploadProductImage };
+```
+
+> Also I moved all Multer configs to my middleware folder, because I prefer to keep routes as clean as possible. So my uploadMiddleware.js looks like this:
+
+```js
+import path from 'path';
+import multer from 'multer';
+
+const checkFileType = (file, cb) => {
+  // Allowed ext
+  const filetypes = /jpeg|jpg|png/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+  }
+};
+
+const uploadImages = multer({
+  dest: 'temp/',
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+});
+
+export { uploadImages };
+```
+
+> I setup my upload route as protected and for admin access only, so I end up with my uploadRoutes.js like this:
+
+```js
+import express from 'express';
+import { protect, isAdmin } from '../middleware/authMiddleware.js';
+import { uploadImages } from '../middleware/uploadMiddleware.js';
+import { uploadProductImage } from '../controllers/uploadControler.js';
+
+const router = express.Router();
+
+router
+  .route('/')
+  .post(protect, isAdmin, uploadImages.single('image'), uploadProductImage);
+
+export default router;
+```
+
+> FYI. Don't forget to add your token then send post request from frontend or postman.
+
+> <b>Carlos Emmanuel: </b>Hi, recently found an error in the @jay code in the uploadRoutes.js you have to replace:
+
+```js
+const uploadPhoto = await cloud.uploader.upload(`${req.file.path}`);
+// with
+const uploadPhoto = await cloudinary.v2.uploader.upload(`${req.file.path}`);
+```
+
+> <b>Jonathan: </b>@Jay this solution is great - thank you. Also, @Carlos is correct, in Jay's uploadRoutes.js, he imports the cloudinary package with the variable name cloud. This will cause an error if you have imported the package with the name of cloudinary. Full uploadRoutes.js:
+
+```js
+import path from 'path';
+import express from 'express';
+import asyncHandler from 'express-async-handler';
+import multer from 'multer';
+
+import pkg from 'cloudinary';
+const cloudinary = pkg;
+
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename(req, file, cb) {
+    cb(
+      null,
+      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
+    );
+  },
+});
+
+function checkFileType(file, cb) {
+  const filetypes = /jpg|jpeg|png/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+    return cb(null, true);
+  } else {
+    cb('Images only!');
+  }
+}
+
+const upload = multer({
+  storage,
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+});
+
+router.post(
+  '/',
+  upload.single('image'),
+  asyncHandler(async (req, res) => {
+    const uploadPhoto = await cloudinary.uploader.upload(`${req.file.path}`);
+    console.log(uploadPhoto);
+    console.log(uploadPhoto.url);
+    res.send(uploadPhoto.url);
+  })
+);
+
+export default router;
+```
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Ramzi: </b>Amazon S3
+> Hi, I know it's been mentioned that Brad would add Amazon S3 (or any kind of persistent online storage) functionality to the course. I need a step-by-step guide to incorporate it into the existing code.
+>
+> Unfortunately, it's not working for me with any of the solutions listed here--not even lu yi's guide, which seems to be the closest to the multer-s3 instructions.
+>
+> Keeping images on Heroku is not useful in the app. I need backend and frontend code to make this work in the app. It would help to get a postman example that lets me see how add a photo to the Amazon S3 bucket, either using multer s3 or any other way.
+
+> <b>Bassir: </b>hello there, I have implemented it with s3 and it works:
+
+```js
+import express from 'express';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import aws from 'aws-sdk';
+import config from '../config';
+
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename(req, file, cb) {
+    cb(null, `${Date.now()}.jpg`);
+  },
+});
+
+const upload = multer({ storage });
+
+const router = express.Router();
+
+router.post('/', upload.single('image'), (req, res) => {
+  res.send(`/${req.file.path}`);
+});
+
+aws.config.update({
+  accessKeyId: config.accessKeyId,
+  secretAccessKey: config.secretAccessKey,
+});
+const s3 = new aws.S3();
+const storageS3 = multerS3({
+  s3,
+  bucket: 'your-bucket',
+  acl: 'public-read',
+  contentType: multerS3.AUTO_CONTENT_TYPE,
+  key(req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+const uploadS3 = multer({ storage: storageS3 });
+router.post('/s3', uploadS3.single('image'), (req, res) => {
+  res.send(req.file.location);
+});
+export default router;
+```
+
+&nbsp;
+
+---
+
+&nbsp;
