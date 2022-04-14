@@ -497,3 +497,66 @@ export default router;
 ---
 
 &nbsp;
+
+> <b>Jai: </b>Why are we not deducting the product count if an order is placed? Also if i want to do it how should i change my orders controllers to deduct product count for each product placed in order?
+
+> <b>Jérôme: </b>There are several approachs we could take.
+>
+> We could simply do it when the order is created, or when the order is paid. So in <code>addOrderItems</code> or in <code>updateOrderToPay</code>, we could loop through <code>orderItems</code> and decrement countInStock accordingly. The code would look like this:
+
+```js
+const addOrderItems = handler(async (req, res) => {
+  const {
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  } = req.body;
+
+  if (orderItems?.length < 1) {
+    res.status(400);
+    throw new Error('No order items');
+  } else {
+    const order = new Order({
+      orderItems,
+      shippingAddress,
+      paymentMethod,
+      itemsPrice,
+      taxPrice,
+      shippingPrice,
+      totalPrice,
+      user: req.user._id,
+    });
+
+    const createdOrder = await order.save();
+
+    for (let item of createdOrder.orderItems) {
+      const product = await Product.findById(item.product);
+      product.countInStock -= item.qty;
+      await product.save();
+    }
+
+    res.status(201).json(createdOrder);
+  }
+});
+```
+
+> There are several problems with this approach though. Now if you return to the store the stock has changed even if you never pay the cart. So maybe it is better to put this loop in the <code>updateOrderToPaid</code> controller.
+>
+> But then it doesn't solve all the problems. Because on your site you can expect a few customers trying to purchase the same product and it can become messy.
+>
+> Say customer1 put a product in their cart, the last one in stock. Right now <code>countInStock</code> didn't change and customer2 can put the same product in their cart too. Then customer1 goes through all the steps, the order is created, but not paid yet, he needs some time to go find his credit card. With the second approach <code>countInStock</code> still didn't change. So if custumer2 gets to the final step and pay before customer1, then when customer1 finnaly pay, the product is not in stock anymore...
+>
+> The basic idea to solve this problem is to track if a customer has "reserved" a product, and also check the actual stock at each step of the order process.
+> when customer1's order is created in base, the product should be "virtually" out of stock, and customer2 should be warned at any step during the process that one of their cart items has been sold.
+>
+> Then if customer1 doesn't pay after some delay, the product is put back in stock and customer1 gets an alert that he should confirm the order before checkout.
+
+&nbsp;
+
+---
+
+&nbsp;

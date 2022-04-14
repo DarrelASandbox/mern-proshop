@@ -1,6 +1,7 @@
 import CartScreen from './CartScreen';
 import HomeScreen from './HomeScreen';
 import LoginScreen from './LoginScreen';
+import OrderListScreen from './OrderListScreen';
 import OrderScreen from './OrderScreen';
 import PaymentScreen from './PaymentScreen';
 import PlaceOrderScreen from './PlaceOrderScreen';
@@ -28,4 +29,5 @@ export {
   UserEditScreen,
   ProductListScreen,
   ProductEditScreen,
+  OrderListScreen,
 };
