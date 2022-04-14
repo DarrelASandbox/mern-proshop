@@ -38,11 +38,8 @@ const OrderScreen = () => {
     }
   }, [dispatch, orderId, successPay, order]);
 
-  const successPaymentHandler = (paymentResult) => {
-    console.log(paymentResult);
+  const successPaymentHandler = (paymentResult) =>
     dispatch(payOrder(orderId, paymentResult));
-  };
-
   const displayOrderList = () => {
     if (loading) return <Loader />;
     if (error) return <Message variant='danger'>{error}</Message>;
