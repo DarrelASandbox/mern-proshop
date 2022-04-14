@@ -169,3 +169,38 @@ export const getOrderById = asyncHandler(async (req, res) => {
 ---
 
 &nbsp;
+
+> <b>Roy: </b>Why are we actually removing products from the DB versus giving them a isDeleted field of true? Deleted products will break past oders
+> If users were to order products, and then 3 months later the site owner wanted to remove the product from the site simply deleting the product will result in errors in viewing past orders.
+>
+> Should we not be adding a isDeleted (or whatever) field to products, and simply toggling products to isDeleted versus removing them? Then past orders can load the data, but we can filter store lists by that field.
+>
+> (This even to a lesser extent should carry over to users. While a user might 'delete' their own account and staff could even delete an account, it shouldn't really be removed from the DB. If admin are reviewing orders and looking for past orders due to a complaint or what not they couldn't find user information as it was simply removed.)
+
+> <b>Bassir: </b>yes. you are right. setting isDeleted to true is a better way in real scenario.
+
+> <b>Tomasz: </b>Good point, but I can see some problems with isDeleted approach when it comes to user.
+>
+> It is not completely unrealistic that user deletes an account and some time later wants to register again. Using the same email adress will give an error from db since we keep storing users profile. Duplicate email error will clearly inform user that his/her data is still stored in our db. Aren't we legaly obligated to remove that data on user's request? I know facebook e.g. keeps all the data forever but not sure it is the way to go.
+>
+> We could test isDeleted prop when duplicate email and run update instead of create, but then user logs into new account and sees all the previous orders... is that a good experience? Personally I would expect having a clear history with new account, but I am not sure about it.
+>
+> Shoudn't we populate order with user data when order is created and store information in order object rather then read it by reference every time we retrive order from db? That gives us user data we may need in regards to an order and allows user to delete his/her profile without breaking the orders. An order can only be created by one user so that shouldn't bring that much additional load on db especialy we don't need all the user data in the order just some of them.
+>
+> isDeleted approach could work with products only and orders should never be deleted...
+>
+> I am very curious what are your thoughts about it.
+
+> <b>Roy: </b>The idea of duplicating some of the product info relevant to the order into the order row can work, but also wasn't covered here. That's a design choice - either have enough info saved to display orders as needed or keep the products long(er) term so you can view orders and even the full product listing.
+>
+> In terms of the user, again design choice. When you query to see if the user exists you can exclude any returns with the isDeleted flag. If the results are 0 (either never registered, or registered and deleted) then create a new user. You could even go a step further with that query. If it returns an isDeleted user account you can offer a recovery option that requires more information than just the email -- maybe past order numbers or something private -- and if the user provides it then restore the account.
+>
+> But with the idea of a new account, then it has a new, unique ID. All your 'is there an order' or whatever queries should use that and never return results from a different user ID (from the old user account).
+>
+> In general though you need to do something to keep some records at least for the short term just for accounting, delivers, etc.
+
+&nbsp;
+
+---
+
+&nbsp;
