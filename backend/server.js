@@ -12,6 +12,8 @@ import userRoutes from './routes/userRoutes.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

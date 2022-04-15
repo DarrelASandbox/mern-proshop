@@ -52,11 +52,46 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.brand = brand;
     product.image = image;
     product.category = category;
-    product.descripton = description;
+    product.description = description;
     product.countInStock = countInStock;
 
     const updatedProduct = await product.save();
     res.status(201).json(updatedProduct);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
+const createProductReview = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
+
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    const alreadyReviewed = product.reviews.find(
+      (review) => review.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      res.status(400);
+      throw new Error('You can only submit one review');
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: +rating,
+      comment,
+      user: req.user._id,
+    };
+
+    product.reviews.push(review);
+    product.numReviews = product.reviews.length;
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    await product.save();
+    res.status(201).json({ message: 'Review added' });
   } else {
     res.status(404);
     throw new Error('Product not found');
@@ -69,4 +104,5 @@ export {
   deleteProduct,
   createProduct,
   updateProduct,
+  createProductReview,
 };
