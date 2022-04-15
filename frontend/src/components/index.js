@@ -4,6 +4,7 @@ import FormContainer from './FormContainer';
 import Header from './Header';
 import Loader from './Loader';
 import Message from './Message';
+import Meta from './Meta';
 import Product from './Product';
 import Rating from './Rating';
 import SearchBox from './SearchBox';
@@ -17,5 +18,6 @@ export {
   Message,
   FormContainer,
   CheckoutSteps,
+  Meta,
   SearchBox,
 };
