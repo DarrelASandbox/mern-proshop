@@ -6,6 +6,7 @@ import {
   getProducts,
   updateProduct,
   createProductReview,
+  getTopRatedProducts,
 } from '../controllers/productController.js';
 import {
   adminMiddleware,
@@ -18,6 +19,8 @@ router
   .route('/')
   .get(getProducts)
   .post(authMiddleware, adminMiddleware, createProduct);
+
+router.get('/top', getTopRatedProducts);
 
 router
   .route('/:id')

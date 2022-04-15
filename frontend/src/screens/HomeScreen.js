@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { listProducts } from '../actions/productActions';
 import { Loader, Message, Product } from '../components/';
 import Paginate from '../components/Paginate';
+import ProductCarousel from '../components/ProductCarousel';
 
 const HomeScreen = () => {
   const productList = useSelector((state) => state.productList);
@@ -38,6 +39,7 @@ const HomeScreen = () => {
 
   return (
     <>
+      {!keyword && <ProductCarousel />}
       <h1>Latest Products</h1>
       {displayProductList()}
     </>
