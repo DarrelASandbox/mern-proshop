@@ -560,3 +560,144 @@ const addOrderItems = handler(async (req, res) => {
 ---
 
 &nbsp;
+
+> <b>Anirudh: </b>Product review allowance scope
+>
+> Are we not supposed to allow only the users who have purchased the product to review? If not, every other user can add reviews about any product listed
+
+> <b>Bassir: </b>it is restricted on this project but it prevents duplicate review. all users should share the experience with products.
+
+> <b>Bernardo: </b>I restricted it to users that have ordered the product since I couldn't figure out how to both check if the user has ordered the product and if the order in which the product is present has been delivered/paid.
+>
+> Still better than any one can review it:
+
+```js productController.js
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Private
+const createProductReview = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
+
+  const product = await Product.findById(req.params.id);
+
+  // Bring in user orders to check if they ordered the product
+  const orders = await Order.find({ user: req.user._id });
+
+  // Array of product ids that the user ordered
+  const ordersItems = [].concat.apply(
+    [],
+    orders.map((order) =>
+      order.orderItems.map((item) => item.product.toString())
+    )
+  );
+
+  if (product) {
+    // Check if the id of the product matches any of the users ordered products
+    const hasBought = ordersItems.includes(product._id.toString());
+
+    if (!hasBought) {
+      res.status(400);
+      throw new Error('You can only review products you bought');
+    }
+
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      res.status(400);
+      throw new Error('You can only review each product once');
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    };
+
+    product.reviews.push(review);
+
+    product.numReviews = product.reviews.length;
+
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    await product.save();
+
+    res.status(201).json({ message: 'Review added' });
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+```
+
+> <b>Eric: </b>I implemented this via the front-end only, no changes to the back end. This will show the review form to users that are:
+>
+> 1. Logged in
+> 2. Have purchased the item being shown
+> 3. The customer order in which the item was purchased has been marked as delivered
+>
+> Note: I have modified a few things in my project, but the solution should be similar for you if you followed the course 100%
+>
+> I created a <code>ProductReviewForm</code> component which takes in the product <code>id</code> and then gets called from the <code>ProductScreen</code>: &lt;ProductReviewForm id={id} /&gt;
+>
+> The <code>ProductReviewForm</code> component contains the <code>checkProductPurchase</code> function:
+
+```js
+// Check if the current product has been purchased by the user
+// Return the order object that contains the current product
+const checkProductPurchase = (userOrders, singleProduct) => {
+  const checkResult = userOrders.find((order) =>
+    order.orderItems.some((item) => item._id === singleProduct._id)
+  );
+  return checkResult;
+};
+```
+
+> The <code>checkProductPurchase</code> function takes in <code>userOrders</code> and <code>singleProduct</code> which are an array of objects from the <code>payment_context</code> and the current product object from the <code>payment_context</code> respectively.
+>
+> It creates and returns the <code>checkResult</code> constant which can be in one of two states:
+>
+> 1. <code>Order</code> object (If the current product was found inside one of the user's orders
+> 2. <code>undefined</code> (If the current product was not found inside one of the user's orders)
+>
+> The result from the <code>checkProductPurchase</code> function is then set to state via <code>useState</code> and <code>useEffect</code>:
+
+```js
+// Define useState local state
+const [localCheckResult, setCheckResult] = useState(false);
+
+// Define useEffect actions
+useEffect(() => {
+  userOrders && setCheckResult(checkProductPurchase(userOrders, singleProduct));
+}, []);
+```
+
+> Once in state we render conditionally like so:
+> <b>Note:</b> Due to the asynchronous nature of <code>setState</code>, we can only access the .<code>isDelivered</code> property value from <code>localCheckResult</code> once <code>localCheckResult</code> has been successfully updated by <code>setCheckResult</code> i.e. <code>localCheckResult</code> && <code>localCheckResult.isDelivered</code>
+
+```js
+  return (
+    <Wrapper>
+        <div className="reviews-form">
+          {isUserLoggedIn(userInfo) &&
+            userOrders &&
+            localCheckResult &&
+            localCheckResult.isDelivered && (
+              <form className ....
+                .....
+              </form>
+            )}
+        </div>
+```
+
+> I feel like this is the behavior that we've come to expect from E-commerce apps so I'm happy that I was able to get it implemented. I hope it helps others, keep coding!
+
+&nbsp;
+
+---
+
+&nbsp;
