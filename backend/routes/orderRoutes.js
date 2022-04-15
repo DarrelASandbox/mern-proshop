@@ -5,6 +5,7 @@ import {
   updateOrderToPaid,
   getMyOrders,
   getAllOrders,
+  updateOrderToDelivered,
 } from '../controllers/orderController.js';
 import {
   adminMiddleware,
@@ -21,5 +22,8 @@ router
 router.route('/myorders').get(authMiddleware, getMyOrders);
 router.route('/:id').get(authMiddleware, getOrderById);
 router.route('/:id/pay').patch(authMiddleware, updateOrderToPaid);
+router
+  .route('/:id/deliver')
+  .patch(authMiddleware, adminMiddleware, updateOrderToDelivered);
 
 export default router;
