@@ -1,18 +1,19 @@
 import { useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { listProducts } from '../actions/productActions';
 import { Loader, Message, Product } from '../components/';
 
 const HomeScreen = () => {
-  const dispatch = useDispatch();
-
   const productList = useSelector((state) => state.productList);
   const { error, products } = productList;
 
+  const dispatch = useDispatch();
+  const { keyword } = useParams();
   useEffect(() => {
-    dispatch(listProducts());
-  }, [dispatch]);
+    dispatch(listProducts(keyword));
+  }, [dispatch, keyword]);
 
   const displayProductList = () => {
     if (error) return <Message variant='danger'>{error}</Message>;

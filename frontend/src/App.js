@@ -5,18 +5,18 @@ import {
   CartScreen,
   HomeScreen,
   LoginScreen,
+  OrderListScreen,
   OrderScreen,
   PaymentScreen,
   PlaceOrderScreen,
+  ProductEditScreen,
+  ProductListScreen,
   ProductScreen,
   ProfileScreen,
   RegisterScreen,
   ShippingScreen,
   UserEditScreen,
   UserListScreen,
-  ProductListScreen,
-  ProductEditScreen,
-  OrderListScreen,
 } from './screens/';
 
 const App = () => (
@@ -27,6 +27,7 @@ const App = () => (
         <main className='py-3'>
           <Routes>
             <Route path='/' element={<HomeScreen />} />
+            <Route path='/search/:keyword' element={<HomeScreen />} />
             <Route path='/register' element={<RegisterScreen />} />
             <Route path='/login' element={<LoginScreen />} />
             <Route path='/profile' element={<ProfileScreen />} />

@@ -6,6 +6,7 @@ import Loader from './Loader';
 import Message from './Message';
 import Product from './Product';
 import Rating from './Rating';
+import SearchBox from './SearchBox';
 
 export {
   Header,
@@ -16,4 +17,5 @@ export {
   Message,
   FormContainer,
   CheckoutSteps,
+  SearchBox,
 };
