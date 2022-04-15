@@ -701,3 +701,51 @@ useEffect(() => {
 ---
 
 &nbsp;
+
+> <b>Alexei: </b>Cart reset & other bugs
+>
+> Thanks for the great course, as usual :P Some bugs I found...
+>
+> 1. You forgot to implement cart reset after order is submited, the cart stays with the items even if the order submited and payed,
+> 2. The search box, when you press the "back" button, it goes back, but the search input stays with the search value.
+> 3. The loaders.. when you used {successUpdate && ...} and {success && ...} sometimes you can see two loaders on one action (for example in the product managment page, try to delete a couple of products one after other).
+> 4. product details page reset.. when you enter a couple of different products, you can see the previous product details for a second, untill it updates with the new product details.
+> 5. Usualy only clients that bought some product should be able to rate it, not everybody.
+> 6. When you delete user, you should delete his orders also... its not makes sense to leave it.. besides you cant enter/view any of the deleted user orders...
+> 7. When you keep the product details in the order tabe (details like image), if the product get updated, its not appears in the orders.. you can still see the old product details.. I think it should be populated with the product table and get the updated details from that table.
+> 8. Maybe you can add stripe in addition to paypal.
+>
+> Anyway that what I found in my learning experience, and I think its should be fix to get "more stable" system in the end :)
+
+> <b>Jérôme: </b>Thanks for reporting those bugs, this gives us some cool things to work on once finished.
+>
+> Good catch for point 1, where I work there are sometimes bugs where the cart doesn't reset after the order is placed, and customers are worried that the order didn't got saved. sometimes they place another order...
+>
+> On point 3, I think the overall management of loading status is lacking. It's never defined in initial state and even the state returned by the reducers is not always accurate.
+> Same thing with point 4, I had the same flickering problems at the beginning of the implementation of the front end, and I solved it with a better management of the loading state.
+>
+> On point 5, a good alternative is to keep track of the reviews by actual buyers on the site, like it's done on Amazon. We implemented such a system where I work, before that any connected user could post a review but now those which comes from actual buyers of the product are tagged "verified".
+> Neat idea: implement a reward for verified reviews ;)
+>
+> Point 6: no, no, no! You should keep track of any order!
+> Delete user info (name, email, address), but keep track of the order, as an "anonymous" order.
+> Also keep track of canceled orders.
+>
+> I'm not so sure about point 7.
+> To me the product should stay in the order as it was when ordered (images, price, maybe even description...). We still have the id to get the current state of the product.
+> I'd even argue that we should store customer name and email in the order, that's what we do where I work. We have the current info of the customer with the id, but we also keep customer's info as they were at the moment of the order.
+>
+> For context, I work for an eCommerce shop that sell any photography related stuff. The site has been online for almost 20 years, but rely mostly on "old" technologies (php/MySQL, no framework, jQuery, yeah, I know...).
+
+> <b>Alexei: </b>Thanks for the reply!
+>
+> 1.  I agree, the orders should stay even if the user got deleted, but you need to keep the user details inside the order table, for now after the user deleted, you cant enter the order at all.
+> 2.  I agree, the product should be kept with the original info in the order table (I didn't thought about it well before) but the problem is the Image, in the end if you update the image, you should remove the old one (else you will get a lot of trash in the server), and after you remove the old one. its broken in the orders...
+>
+> Hey for me PHP & MySQL is still win win even in our days :P
+
+&nbsp;
+
+---
+
+&nbsp;
