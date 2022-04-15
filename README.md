@@ -2,7 +2,7 @@
 
 - MERN eCommerce From Scratch
 - Build an eCommerce platform from the ground up with React, Redux, Express & MongoDB
-- Tutorial for ProShop
+- Tutorial for ProShop ([Heroku Demo](https://proshop-15apr-2022.herokuapp.com/))
 - <b style="color:red;">NOT MEANT FOR PRODUCTION (Refer to Notes section below)</b>
 - [GitHub - Brad Traversy](https://github.com/bradtraversy)
 - [YouTube - Coding with Basir](https://www.youtube.com/CodingwithBasir)
