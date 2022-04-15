@@ -1,5 +1,11 @@
 import axios from 'axios';
 import {
+  PRODUCT_CREATE_FAIL,
+  PRODUCT_CREATE_REQUEST,
+  PRODUCT_CREATE_REVIEW_FAIL,
+  PRODUCT_CREATE_REVIEW_REQUEST,
+  PRODUCT_CREATE_REVIEW_SUCCESS,
+  PRODUCT_CREATE_SUCCESS,
   PRODUCT_DELETE_FAIL,
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
@@ -7,23 +13,18 @@ import {
   PRODUCT_DETAILS_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_SUCCESS,
-  PRODUCT_CREATE_FAIL,
-  PRODUCT_CREATE_REQUEST,
-  PRODUCT_CREATE_SUCCESS,
   PRODUCT_UPDATE_FAIL,
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
-  PRODUCT_CREATE_REVIEW_FAIL,
-  PRODUCT_CREATE_REVIEW_REQUEST,
-  PRODUCT_CREATE_REVIEW_SUCCESS,
 } from '../constants/productConstant';
 
 const listProducts =
-  (keyword = '') =>
+  (keyword = '', pageNumber = '') =>
   async (dispatch) => {
     try {
-      console.log(keyword);
-      const { data } = await axios.get(`/api/products?keyword=${keyword}`);
+      const { data } = await axios.get(
+        `/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
+      );
       dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
     } catch (error) {
       dispatch({

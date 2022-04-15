@@ -59,7 +59,6 @@ const ProductEditScreen = () => {
     try {
       const config = { headers: { 'Content-Type': 'multipart/form-data' } };
       const { data } = await axios.post('/api/upload', formData, config);
-      console.log(data);
       setImage(data);
       setUploading(false);
     } catch (error) {
